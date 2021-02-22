@@ -15,6 +15,12 @@ void init_frame(py::module &m) {
         self._shape,
         self._strides); }
     );
+    BufData_py.def(py::init([](py::buffer b) {
+        py::buffer_info info = b.request();
+        const std::vector<size_t> shape(info.shape.begin(), info.shape.end());
+        const std::vector<size_t> strides(info.strides.begin(), info.strides.end());
+        return BufData(info.ptr, info.itemsize, info.format, info.ndim, shape, strides);
+    }));
 
     // Helper function for supporting python's buffer protocol
     auto get_frame_data = [](const rs2::frame& self) ->  BufData
